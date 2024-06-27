@@ -9,4 +9,7 @@ export const config = {
   get jwtSecret() {
     return getRequired('JWT_SECRET').asString();
   },
+  get baseUrl() {
+    return getRequired('BASE_URL').asString();
+  },
 };
