@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { TransactionType } from '@prisma/client';
 import {
-  IsDate,
+  IsDateString,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -15,7 +15,7 @@ export class CreateTransactionDto {
   @ApiProperty({ description: 'The amount of money put into the transaction' })
   amount: number;
 
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   @ApiProperty({ description: 'Date the transaction created' })
   transaction_date: Date;

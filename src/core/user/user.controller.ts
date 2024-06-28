@@ -25,6 +25,7 @@ export class UserController {
       created_at: true,
       updated_at: true,
     })) as Profile;
+
     return { message: 'Successfully retrieved profile', result: profile };
   }
 }

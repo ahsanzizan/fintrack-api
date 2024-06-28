@@ -3,6 +3,7 @@ import { ConfigModule } from '@nestjs/config';
 
 import { AppController } from './app.controller';
 import { AuthModule } from './core/auth/auth.module';
+import { BudgetModule } from './core/budget/budget.module';
 import { TransactionModule } from './core/transaction/transaction.module';
 import { UserModule } from './core/user/user.module';
 
@@ -14,6 +15,7 @@ import { UserModule } from './core/user/user.module';
       envFilePath: ['.env', '.env.development'],
     }),
     TransactionModule,
+    BudgetModule,
   ],
   controllers: [AppController],
   providers: [],
