@@ -5,12 +5,12 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import * as nodemailer from 'nodemailer';
+import { MailOptions } from 'nodemailer/lib/smtp-transport';
+import { config } from 'src/config';
 import { compareData } from 'src/utils/encryption.utility';
 import { UserService } from '../user/user.service';
 import { UserPayload } from './types';
-import * as nodemailer from 'nodemailer';
-import { config } from 'src/config';
-import { MailOptions } from 'nodemailer/lib/smtp-transport';
 
 @Injectable()
 export class AuthService {
