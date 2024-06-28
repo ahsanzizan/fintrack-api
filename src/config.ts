@@ -12,4 +12,10 @@ export const config = {
   get baseUrl() {
     return getRequired('BASE_URL').asString();
   },
+  get serviceEmail() {
+    return getRequired('SERVICE_EMAIL').asString();
+  },
+  get servicePassword() {
+    return getRequired('SERVICE_PASSWORD').asString();
+  },
 };

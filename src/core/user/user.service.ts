@@ -7,7 +7,12 @@ import { hashData } from 'src/utils/encryption.utility';
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async createUser(email: string, username: string, password: string) {
+  async createUser(
+    email: string,
+    name: string,
+    password: string,
+    verificationToken: string,
+  ) {
     const findWithEmail = await this.prismaService.users.findUnique({
       where: { email },
     });
@@ -18,8 +23,13 @@ export class UserService {
 
     const hashedPassword = await hashData(password);
     const createdUser = await this.prismaService.users.create({
-      data: { email, username, password_hash: hashedPassword },
-      select: { username: true, email: true, created_at: true },
+      data: {
+        email,
+        name,
+        password_hash: hashedPassword,
+        verification_token: verificationToken,
+      },
+      select: { name: true, email: true, created_at: true },
     });
 
     return createdUser;
@@ -32,5 +42,14 @@ export class UserService {
     });
 
     return user;
+  }
+
+  async updateUser(id: string, data: Prisma.usersUpdateInput) {
+    const updatedUser = await this.prismaService.users.update({
+      where: { id },
+      data,
+    });
+
+    return updatedUser;
   }
 }

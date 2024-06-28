@@ -1,13 +1,13 @@
 export interface UserPayload {
   sub: string;
-  username: string;
+  name: string;
   email: string;
   createdAt: Date;
   updatedAt: Date | null;
 }
 
 export interface CreatedUser {
-  username: string;
+  name: string;
   email: string;
   created_at: Date;
 }

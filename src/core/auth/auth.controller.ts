@@ -1,11 +1,19 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { AllowAnon } from './auth.decorator';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+} from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import SignInDto from './dto/signIn.dto';
 import { ResponseTemplate } from 'src/utils/interceptors/transform.interceptor';
-import { CreatedUser, UserPayload } from './types';
+import { AllowAnon } from './auth.decorator';
+import { AuthService } from './auth.service';
+import SignInDto from './dto/signIn.dto';
 import SignUpDto from './dto/signUp.dto';
+import { CreatedUser, UserPayload } from './types';
 
 @Controller('auth')
 export class AuthController {
@@ -19,7 +27,7 @@ export class AuthController {
     @Body() credentials: SignUpDto,
   ): Promise<ResponseTemplate<CreatedUser>> {
     const createduser = await this.authService.registerUser(
-      credentials.username,
+      credentials.name,
       credentials.email,
       credentials.password,
     );
@@ -42,6 +50,20 @@ export class AuthController {
     return {
       message: 'Signed in successfully',
       result: payload,
+    };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Patch('verify/:token')
+  @ApiOperation({ summary: 'Email verification endpoint', tags: ['auth'] })
+  async verify(
+    @Param('token') verificationToken: string,
+  ): Promise<ResponseTemplate<null>> {
+    await this.authService.verifyEmail(verificationToken);
+
+    return {
+      message: 'Email verified successfully',
+      result: null,
     };
   }
 }
