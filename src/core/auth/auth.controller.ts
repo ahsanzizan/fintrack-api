@@ -53,6 +53,7 @@ export class AuthController {
     };
   }
 
+  @AllowAnon()
   @HttpCode(HttpStatus.OK)
   @Patch('verify/:token')
   @ApiOperation({ summary: 'Email verification endpoint', tags: ['auth'] })
