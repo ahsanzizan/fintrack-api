@@ -1,6 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
-import { Prisma, transactions } from '@prisma/client';
+import { transactions } from '@prisma/client';
 import { ResponseTemplate } from 'src/utils/interceptors/transform.interceptor';
 
 import { UseAuth } from '../auth/auth.decorator';
@@ -8,7 +8,7 @@ import { UserPayload } from '../auth/types';
 import CreateTransactionDto from './dto/createTransaction.dto';
 import { TransactionService } from './transaction.service';
 
-@Controller({ path: 'transaction', version: '1' })
+@Controller({ path: 'transactions', version: '1' })
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 
@@ -22,40 +22,10 @@ export class TransactionController {
     @UseAuth() user: UserPayload,
     @Body() data: CreateTransactionDto,
   ): Promise<ResponseTemplate<transactions>> {
-    const {
-      amount,
-      description,
-      transaction_type,
-      transaction_date,
-      categoryName,
-      budgetId,
-    } = data;
-
-    const connectUserId = { connect: { id: user.sub } };
-    const createInput: Prisma.transactionsCreateInput = {
-      amount,
-      description,
-      transaction_type,
-      transaction_date,
-      user: connectUserId,
-      category: {
-        connectOrCreate: {
-          create: {
-            name: data.categoryName,
-            user: connectUserId,
-          },
-          where: { name: categoryName },
-        },
-      },
-      budget: {
-        connect: {
-          id: budgetId,
-        },
-      },
-    };
-
-    const createdTransaction =
-      await this.transactionService.createTransaction(createInput);
+    const createdTransaction = await this.transactionService.createTransaction(
+      user.sub,
+      data,
+    );
 
     return {
       message: 'Successfully created a transaction',
