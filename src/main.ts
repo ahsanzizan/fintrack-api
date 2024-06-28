@@ -1,4 +1,4 @@
-import { LogLevel, ValidationPipe } from '@nestjs/common';
+import { LogLevel, ValidationPipe, VersioningType } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
@@ -25,6 +25,8 @@ async function bootstrap() {
   app.use(helmet());
 
   app.enableCors({ origin: CORS_URLS });
+
+  app.enableVersioning({ type: VersioningType.URI });
 
   const httpAdapterHost = app.get(HttpAdapterHost);
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
