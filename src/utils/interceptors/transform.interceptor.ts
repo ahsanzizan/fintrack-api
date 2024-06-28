@@ -13,7 +13,7 @@ export interface ResponseTemplate<T> {
 }
 
 interface Response<T> {
-  message: string;
+  message: string | string[];
   statusCode: number;
   result: T;
 }

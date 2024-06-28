@@ -1,11 +1,10 @@
 import { LogLevel, ValidationPipe, VersioningType } from '@nestjs/common';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 import { AppModule } from './app.module';
-import { HttpExceptionFilter } from './http-exception.filter';
 import { TransformInterceptor } from './utils/interceptors/transform.interceptor';
 
 const CORS_URLS = ['http://localhost:3000'];
@@ -27,9 +26,6 @@ async function bootstrap() {
   app.enableCors({ origin: CORS_URLS });
 
   app.enableVersioning({ type: VersioningType.URI });
-
-  const httpAdapterHost = app.get(HttpAdapterHost);
-  app.useGlobalFilters(new HttpExceptionFilter(httpAdapterHost));
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
