@@ -1,9 +1,10 @@
 import { LogLevel, ValidationPipe } from '@nestjs/common';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import * as cookieParser from 'cookie-parser';
 import helmet from 'helmet';
+
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './http-exception.filter';
-import * as cookieParser from 'cookie-parser';
 import { TransformInterceptor } from './utils/interceptors/transform.interceptor';
 
 const CORS_URLS = ['http://localhost:3000'];

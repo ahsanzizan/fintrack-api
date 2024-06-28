@@ -9,6 +9,7 @@ import * as nodemailer from 'nodemailer';
 import { MailOptions } from 'nodemailer/lib/smtp-transport';
 import { config } from 'src/config';
 import { compareData } from 'src/utils/encryption.utility';
+
 import { UserService } from '../user/user.service';
 import { UserPayload } from './types';
 
