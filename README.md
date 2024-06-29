@@ -46,7 +46,7 @@ $ npm run test:cov
 
 ## Swagger Documentation
 
-Visit `/docs` and You'll find a swagger API documentation that contains almost all you need to interact with the API.
+Visit `/docs` and You'll find a swagger API documentation that contains all you need to interact with the API.
 
 ## Credits
 
