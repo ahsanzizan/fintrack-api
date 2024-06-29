@@ -26,6 +26,9 @@ export class UserController {
       updated_at: true,
     })) as Profile;
 
-    return { message: 'Successfully retrieved profile', result: profile };
+    return {
+      message: `Successfully retrieved ${user.name}'s profile`,
+      result: profile,
+    };
   }
 }

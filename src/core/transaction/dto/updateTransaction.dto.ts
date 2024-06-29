@@ -3,43 +3,42 @@ import { TransactionType } from '@prisma/client';
 import {
   IsDateString,
   IsEnum,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
 
-export class CreateTransactionDto {
+export class UpdateTransactionDto {
   @IsNumber()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({ description: 'The amount of money put into the transaction' })
-  amount: number;
+  amount?: number;
 
   @IsDateString()
   @IsOptional()
   @ApiProperty({ description: 'Date the transaction created' })
-  transaction_date: Date;
+  transaction_date?: Date;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({ description: "The transaction's description" })
-  description: string;
+  description?: string;
 
   @IsEnum(TransactionType)
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({ description: 'Type of the transaction' })
-  transaction_type: TransactionType;
+  transaction_type?: TransactionType;
 
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({ description: 'Category of the transaction' })
-  categoryName: string;
+  categoryName?: string;
 
   @IsUUID()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({ description: "The transaction's used budget's id" })
-  budgetId: string;
+  budgetId?: string;
 }
 
-export default CreateTransactionDto;
+export default UpdateTransactionDto;
