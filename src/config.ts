@@ -19,4 +19,7 @@ export const config = {
   get servicePassword() {
     return getRequired('SERVICE_PASSWORD').asString();
   },
+  get resetTokenExpiryTime() {
+    return Number(getRequired('RESET_EXPIRY_TIME').asString());
+  },
 };

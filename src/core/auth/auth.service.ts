@@ -10,7 +10,8 @@ import { Prisma } from '@prisma/client';
 import * as nodemailer from 'nodemailer';
 import { MailOptions } from 'nodemailer/lib/smtp-transport';
 import { config } from 'src/config';
-import { compareData } from 'src/utils/encryption.utility';
+import { compareData, hashData } from 'src/utils/encryption.utility';
+import { v4 as uuidv4 } from 'uuid';
 
 import { UserService } from '../user/user.service';
 import UpdateProfileDto from './dto/updateProfile.dto';
@@ -52,7 +53,7 @@ export class AuthService {
   }
 
   async signIn(inputEmail: string, inputPassword: string) {
-    const user = await this.userService.getUser({ email: inputEmail });
+    const user = await this.userService.getUserStrict({ email: inputEmail });
     if (!user)
       throw new NotFoundException(`User with email ${inputEmail} not found`);
 
@@ -92,7 +93,7 @@ export class AuthService {
     const payload = await this.jwtService.verifyAsync<{ email: string }>(
       verificationToken,
     );
-    const user = await this.userService.getUser({ email: payload.email });
+    const user = await this.userService.getUserStrict({ email: payload.email });
 
     if (!user) throw new UnauthorizedException('Verification token is invalid');
 
@@ -103,7 +104,7 @@ export class AuthService {
   }
 
   async updateProfile(userId: string, profileData: UpdateProfileDto) {
-    const user = await this.userService.getUser({ id: userId });
+    const user = await this.userService.getUserStrict({ id: userId });
 
     if (!user) throw new NotFoundException(`User with ID ${userId} not found`);
 
@@ -116,7 +117,7 @@ export class AuthService {
     };
 
     if (email && email != user.email) {
-      const findWithEmail = await this.userService.getUser({ email });
+      const findWithEmail = await this.userService.getUserStrict({ email });
       if (findWithEmail) throw new ForbiddenException('Email already in use');
 
       const newVerificationToken = await this.jwtService.signAsync({ email });
@@ -128,6 +129,55 @@ export class AuthService {
     }
 
     const updatedUser = await this.userService.updateUser(user.id, updateInput);
+
+    return updatedUser;
+  }
+
+  async sendPasswordResetEmail(email: string, token: string) {
+    const mailOptions: MailOptions = {
+      from: config.serviceEmail,
+      to: email,
+      subject: 'Reset Your Password',
+      text: `Please reset your password by clicking on the following link: ${config.baseUrl}/reset-password?token=${token}\nThe link will be invalid in ${config.resetTokenExpiryTime / 60 / 1000} minutes time`,
+    };
+
+    await this.transporter.sendMail(mailOptions);
+  }
+
+  async requestPasswordReset(email: string) {
+    const user = await this.userService.getUserStrict({ email });
+    if (!user)
+      throw new NotFoundException(`User with email ${email} not found`);
+
+    const resetToken = uuidv4();
+    const updateInput: Prisma.usersUpdateInput = {
+      reset_token: resetToken,
+      reset_token_expiry: new Date(Date.now() + config.resetTokenExpiryTime),
+    };
+
+    const updatedUser = await this.userService.updateUser(user.id, updateInput);
+
+    await this.sendPasswordResetEmail(email, resetToken);
+
+    return updatedUser;
+  }
+
+  async resetPassword(userId: string, token: string, newPassword: string) {
+    const user = await this.userService.getUser({
+      id: userId,
+      reset_token: token,
+      reset_token_expiry: { gte: new Date() },
+    });
+
+    if (!user) throw new ForbiddenException('Invalid or expired token');
+
+    const updateInput: Prisma.usersUpdateInput = {
+      password_hash: await hashData(newPassword),
+      reset_token: null,
+      reset_token_expiry: null,
+    };
+
+    const updatedUser = await this.userService.updateUser(userId, updateInput);
 
     return updatedUser;
   }

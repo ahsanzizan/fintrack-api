@@ -35,7 +35,7 @@ export class UserService {
     return createdUser;
   }
 
-  async getUser(
+  async getUserStrict(
     where: Prisma.usersWhereUniqueInput,
     select?: Prisma.usersSelect,
   ) {
@@ -43,6 +43,12 @@ export class UserService {
       where,
       select,
     });
+
+    return user;
+  }
+
+  async getUser(where: Prisma.usersWhereInput, select?: Prisma.usersSelect) {
+    const user = await this.prismaService.users.findFirst({ where, select });
 
     return user;
   }
@@ -63,7 +69,7 @@ export class UserService {
   }
 
   async getUserProfile(userId: string) {
-    const userProfile = await this.getUser(
+    const userProfile = await this.getUserStrict(
       { id: userId },
       {
         name: true,
