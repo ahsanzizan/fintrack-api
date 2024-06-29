@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -10,11 +11,12 @@ import {
 import { ApiOperation } from '@nestjs/swagger';
 import { ResponseTemplate } from 'src/utils/interceptors/transform.interceptor';
 
-import { AllowAnon } from './auth.decorator';
+import { AllowAnon, UseAuth } from './auth.decorator';
 import { AuthService } from './auth.service';
 import SignInDto from './dto/signIn.dto';
 import SignUpDto from './dto/signUp.dto';
-import { CreatedUser, UserPayload } from './types';
+import UpdateProfileDto from './dto/updateProfile.dto';
+import { CreatedUser, UpdateProfileResult, UserPayload } from './types';
 
 @Controller('auth')
 export class AuthController {
@@ -39,7 +41,7 @@ export class AuthController {
   @AllowAnon()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  @ApiOperation({ summary: 'Sign in endpoint', tags: ['auth'] })
+  @ApiOperation({ summary: 'User authentication', tags: ['auth'] })
   async signIn(
     @Body() credentials: SignInDto,
   ): Promise<ResponseTemplate<UserPayload>> {
@@ -56,8 +58,8 @@ export class AuthController {
 
   @AllowAnon()
   @HttpCode(HttpStatus.OK)
-  @Patch('verify/:token')
-  @ApiOperation({ summary: 'Email verification endpoint', tags: ['auth'] })
+  @Get('verify/:token')
+  @ApiOperation({ summary: 'Verify email', tags: ['auth'] })
   async verify(
     @Param('token') verificationToken: string,
   ): Promise<ResponseTemplate<null>> {
@@ -66,6 +68,24 @@ export class AuthController {
     return {
       message: 'Email verified successfully',
       result: null,
+    };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Patch('profile')
+  @ApiOperation({
+    summary: "Update the logged-in user's profile",
+    tags: ['auth', 'profile'],
+  })
+  async updateProfile(
+    @UseAuth() user: UserPayload,
+    @Body() data: UpdateProfileDto,
+  ): Promise<ResponseTemplate<UpdateProfileResult>> {
+    const updatedProfile = await this.authService.updateProfile(user.sub, data);
+
+    return {
+      message: 'Updated the profile successfully',
+      result: updatedProfile,
     };
   }
 }

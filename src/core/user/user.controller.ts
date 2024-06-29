@@ -13,18 +13,13 @@ export class UserController {
 
   @HttpCode(HttpStatus.OK)
   @Get()
-  @ApiOperation({ summary: "Returns user's profile", tags: ['profile'] })
+  @ApiOperation({ summary: "Get logged-in user's profile", tags: ['profile'] })
   async getProfile(
     @UseAuth() user: UserPayload,
   ): Promise<ResponseTemplate<Profile>> {
-    const profile = (await this.userService.getUser(user.email, {
-      name: true,
-      email: true,
-      verification_token: true,
-      is_verified: true,
-      created_at: true,
-      updated_at: true,
-    })) as Profile;
+    const profile = (await this.userService.getUserProfile(
+      user.email,
+    )) as Profile;
 
     return {
       message: `Successfully retrieved ${user.name}'s profile`,

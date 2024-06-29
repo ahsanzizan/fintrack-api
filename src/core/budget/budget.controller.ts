@@ -15,7 +15,7 @@ export class BudgetController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: 'Budget creation endpoint',
+    summary: 'Create a budget',
     tags: ['budget'],
   })
   async createBudget(

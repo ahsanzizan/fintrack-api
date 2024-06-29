@@ -26,7 +26,7 @@ export class TransactionController {
   @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
-    summary: 'Transaction creation endpoint',
+    summary: 'Create a transaction',
     tags: ['transaction'],
   })
   async createTransaction(

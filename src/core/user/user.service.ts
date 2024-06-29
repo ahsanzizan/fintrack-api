@@ -35,21 +35,46 @@ export class UserService {
     return createdUser;
   }
 
-  async getUser(userEmail: string, select?: Prisma.usersSelect) {
+  async getUser(
+    where: Prisma.usersWhereUniqueInput,
+    select?: Prisma.usersSelect,
+  ) {
     const user = await this.prismaService.users.findUnique({
-      where: { email: userEmail },
+      where,
       select,
     });
 
     return user;
   }
 
-  async updateUser(id: string, data: Prisma.usersUpdateInput) {
+  async updateUser(userId: string, userData: Prisma.usersUpdateInput) {
     const updatedUser = await this.prismaService.users.update({
-      where: { id },
-      data,
+      where: { id: userId },
+      data: userData,
+      select: {
+        name: true,
+        email: true,
+        verification_token: true,
+        is_verified: true,
+      },
     });
 
     return updatedUser;
+  }
+
+  async getUserProfile(userId: string) {
+    const userProfile = await this.getUser(
+      { id: userId },
+      {
+        name: true,
+        email: true,
+        verification_token: true,
+        is_verified: true,
+        created_at: true,
+        updated_at: true,
+      },
+    );
+
+    return userProfile;
   }
 }

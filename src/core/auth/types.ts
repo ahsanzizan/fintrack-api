@@ -11,3 +11,10 @@ export interface CreatedUser {
   email: string;
   created_at: Date;
 }
+
+export interface UpdateProfileResult {
+  name: string;
+  email: string;
+  verification_token: string;
+  is_verified: boolean;
+}

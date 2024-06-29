@@ -33,8 +33,18 @@ async function bootstrap() {
 
   const documentConfig = new DocumentBuilder()
     .setTitle('FinTrack API')
-    .setDescription('The web API for FinTrack')
+    .setDescription(
+      'FinTrack API is a robust and intuitive expense tracker API designed to empower users to take control of their personal finances. With FinTrack, users can effortlessly track their expenses and incomes, categorize transactions, and generate insightful reports. The API aims to provide a comprehensive solution for personal finance management, making it easy for users to monitor their spending habits, set budgets, and achieve their financial goals.',
+    )
     .setVersion('1.0')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'bearer',
+      bearerFormat: 'JWT',
+      name: 'JWT',
+      description: 'Enter JWT token',
+      in: 'header',
+    })
     .build();
   const document = SwaggerModule.createDocument(app, documentConfig);
   SwaggerModule.setup('docs', app, document);
