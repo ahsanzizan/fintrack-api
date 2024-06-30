@@ -8,16 +8,19 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 import { transactions } from '@prisma/client';
 import { ResponseTemplate } from 'src/utils/interceptors/transform.interceptor';
+import { PaginatedResult } from 'src/utils/paginator.utility';
 
 import { UseAuth } from '../auth/auth.decorator';
 import { UserPayload } from '../auth/types';
 import CreateTransactionDto from './dto/createTransaction.dto';
 import UpdateTransactionDto from './dto/updateTransaction.dto';
 import { TransactionService } from './transaction.service';
+import { TransactionsWithCategoryAndBudget } from './types';
 
 @Controller({ path: 'transactions', version: '1' })
 export class TransactionController {
@@ -52,14 +55,25 @@ export class TransactionController {
   })
   async getTransactions(
     @UseAuth() user: UserPayload,
-  ): Promise<ResponseTemplate<transactions[]>> {
-    const transactions = await this.transactionService.getTransactions(
-      user.sub,
-    );
+    @Query('page') page?: number,
+    @Query('search') search?: string,
+    @Query('order_by') orderBy?: string,
+    @Query('order_type') orderType?: string,
+  ): Promise<
+    ResponseTemplate<PaginatedResult<TransactionsWithCategoryAndBudget>>
+  > {
+    const paginatedTransactions =
+      await this.transactionService.getPaginatedTransactions(
+        user.sub,
+        page,
+        search,
+        orderBy,
+        orderType,
+      );
 
     return {
       message: `Successfully retrieved ${user.name}'s transactions`,
-      result: transactions,
+      result: paginatedTransactions,
     };
   }
 

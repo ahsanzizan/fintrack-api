@@ -5,9 +5,13 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/lib/prisma/prisma.service';
+import { paginator } from 'src/utils/paginator.utility';
 
 import CreateTransactionDto from './dto/createTransaction.dto';
 import UpdateTransactionDto from './dto/updateTransaction.dto';
+import { TransactionsWithCategoryAndBudget } from './types';
+
+const paginate = paginator(10);
 
 @Injectable()
 export class TransactionService {
@@ -100,6 +104,56 @@ export class TransactionService {
     });
 
     return transactions;
+  }
+
+  async getPaginatedTransactions(
+    userId: string,
+    page?: number,
+    search?: string,
+    orderBy?: string,
+    orderType?: string,
+  ) {
+    const searchClause: Prisma.transactionsWhereInput = search
+      ? {
+          user_id: userId,
+          OR: [
+            {
+              description: {
+                contains: search,
+                mode: 'insensitive',
+              },
+              category: {
+                name: {
+                  contains: search,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          ],
+        }
+      : {};
+
+    const findManyInput: Prisma.transactionsFindManyArgs = {
+      where: searchClause,
+      orderBy: { amount: undefined, transaction_date: undefined },
+      include: {
+        category: { select: { name: true } },
+        budget: { select: { name: true } },
+      },
+    };
+    if (orderBy && ['amount', 'transaction_date'].includes(orderBy)) {
+      const validOrderType =
+        orderType && ['asc', 'desc'].includes(orderType) ? orderType : 'asc';
+
+      findManyInput.orderBy![orderBy] = validOrderType;
+    }
+
+    const paginatedTransactions = await paginate<
+      TransactionsWithCategoryAndBudget,
+      Prisma.transactionsFindManyArgs
+    >(this.prismaService.transactions, page, findManyInput);
+
+    return paginatedTransactions;
   }
 
   async updateTransaction(
