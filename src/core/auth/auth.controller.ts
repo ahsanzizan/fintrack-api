@@ -8,7 +8,7 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { ResponseTemplate } from 'src/utils/interceptors/transform.interceptor';
 
 import { AllowAnon, UseAuth } from './auth.decorator';
@@ -26,7 +26,12 @@ export class AuthController {
   @AllowAnon()
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
-  @ApiOperation({ summary: 'User registration', tags: ['auth'] })
+  @ApiOperation({
+    summary: 'User registration',
+    description: 'Register a new user with name, email, and password.',
+  })
+  @ApiBody({ type: SignUpDto })
+  @ApiResponse({ status: 201, description: 'Registered successfully.' })
   async signUp(
     @Body() credentials: SignUpDto,
   ): Promise<ResponseTemplate<CreatedUser>> {
@@ -42,7 +47,12 @@ export class AuthController {
   @AllowAnon()
   @HttpCode(HttpStatus.OK)
   @Post('login')
-  @ApiOperation({ summary: 'User authentication', tags: ['auth'] })
+  @ApiOperation({
+    summary: 'User authentication',
+    description: 'Authenticate a user using email and password.',
+  })
+  @ApiBody({ type: SignInDto })
+  @ApiResponse({ status: 200, description: 'Signed in successfully.' })
   async signIn(
     @Body() credentials: SignInDto,
   ): Promise<ResponseTemplate<UserPayload>> {
@@ -60,7 +70,16 @@ export class AuthController {
   @AllowAnon()
   @HttpCode(HttpStatus.OK)
   @Get('verify/:token')
-  @ApiOperation({ summary: 'Verify email', tags: ['auth'] })
+  @ApiOperation({
+    summary: 'Verify email',
+    description: 'Verify user email using a verification token.',
+  })
+  @ApiParam({
+    name: 'token',
+    description: "The verification token sent to the user's email.",
+    example: 'some-verification-token',
+  })
+  @ApiResponse({ status: 200, description: 'Email verified successfully.' })
   async verify(
     @Param('token') verificationToken: string,
   ): Promise<ResponseTemplate<null>> {
@@ -76,8 +95,11 @@ export class AuthController {
   @Patch('profile')
   @ApiOperation({
     summary: "Update the logged-in user's profile",
-    tags: ['auth', 'profile'],
+    description:
+      'Update the profile of the logged-in user. An email verification will be sent if the email is changed.',
   })
+  @ApiBody({ type: UpdateProfileDto })
+  @ApiResponse({ status: 200, description: 'Profile updated successfully.' })
   async updateProfile(
     @UseAuth() user: UserPayload,
     @Body() data: UpdateProfileDto,
@@ -94,7 +116,12 @@ export class AuthController {
   @Post('request-password-reset')
   @ApiOperation({
     summary: 'Request a password reset token',
-    tags: ['auth'],
+    description:
+      "Request a password reset token to be sent to the logged-in user's email.",
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Password reset email sent successfully.',
   })
   async requestPasswordReset(
     @UseAuth() user: UserPayload,
@@ -111,8 +138,11 @@ export class AuthController {
   @Post('reset-password')
   @ApiOperation({
     summary: "Reset logged-in user's password",
-    tags: ['auth'],
+    description:
+      'Reset the password for the logged-in user using a reset token and new password.',
   })
+  @ApiBody({ type: ResetPasswordDto })
+  @ApiResponse({ status: 200, description: 'Password reset successfully.' })
   async resetPassword(
     @UseAuth() user: UserPayload,
     @Body() data: ResetPasswordDto,
