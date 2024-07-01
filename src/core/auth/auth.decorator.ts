@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 
 export const IS_PUBLIC_KEY = 'isPublic';
-export const AllowAnon = () => SetMetadata(IS_PUBLIC_KEY, true);
+export const IsPublic = () => SetMetadata(IS_PUBLIC_KEY, true);
 
 // A param decorator for using the JWT payload in a route
 export const UseAuth = createParamDecorator(

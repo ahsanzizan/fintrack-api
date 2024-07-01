@@ -11,7 +11,7 @@ import {
 import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
 import { ResponseTemplate } from 'src/utils/interceptors/transform.interceptor';
 
-import { AllowAnon, UseAuth } from './auth.decorator';
+import { IsPublic, UseAuth } from './auth.decorator';
 import { AuthService } from './auth.service';
 import ResetPasswordDto from './dto/resetPassword.dto';
 import SignInDto from './dto/signIn.dto';
@@ -23,7 +23,7 @@ import { CreatedUser, UpdateProfileResult, UserPayload } from './types';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @AllowAnon()
+  @IsPublic()
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
   @ApiOperation({
@@ -44,7 +44,7 @@ export class AuthController {
     return { message: 'Registered successfully', result: createduser };
   }
 
-  @AllowAnon()
+  @IsPublic()
   @HttpCode(HttpStatus.OK)
   @Post('login')
   @ApiOperation({
@@ -67,7 +67,7 @@ export class AuthController {
     };
   }
 
-  @AllowAnon()
+  @IsPublic()
   @HttpCode(HttpStatus.OK)
   @Get('verify/:token')
   @ApiOperation({

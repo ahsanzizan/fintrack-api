@@ -24,7 +24,9 @@ import { PaginatedResult } from 'src/utils/paginator.utility';
 
 import { UseAuth } from '../auth/auth.decorator';
 import { UserPayload } from '../auth/types';
+import { IdParamDto } from '../global.dtos';
 import CreateTransactionDto from './dto/createTransaction.dto';
+import { PaginationDto } from './dto/pagination.dto';
 import UpdateTransactionDto from './dto/updateTransaction.dto';
 import { TransactionService } from './transaction.service';
 import { TransactionsWithCategoryAndBudget } from './types';
@@ -97,13 +99,12 @@ export class TransactionController {
   })
   async getTransactions(
     @UseAuth() user: UserPayload,
-    @Query('page') page?: number,
-    @Query('search') search?: string,
-    @Query('order_by') orderBy?: string,
-    @Query('order_type') orderType?: string,
+    @Query() queries: PaginationDto,
   ): Promise<
     ResponseTemplate<PaginatedResult<TransactionsWithCategoryAndBudget>>
   > {
+    const { page, search, order_by: orderBy, order_type: orderType } = queries;
+
     const paginatedTransactions =
       await this.transactionService.getPaginatedTransactions(
         user.sub,
@@ -137,8 +138,9 @@ export class TransactionController {
   })
   async getTransaction(
     @UseAuth() user: UserPayload,
-    @Param('id') id: string,
+    @Param() params: IdParamDto,
   ): Promise<ResponseTemplate<transactions>> {
+    const { id } = params;
     const transaction = await this.transactionService.getTransaction(
       id,
       user.sub,
@@ -169,9 +171,10 @@ export class TransactionController {
   })
   async updateTransaction(
     @UseAuth() user: UserPayload,
-    @Param('id') id: string,
+    @Param() params: IdParamDto,
     @Body() data: UpdateTransactionDto,
   ): Promise<ResponseTemplate<transactions>> {
+    const { id } = params;
     const updatedTransaction = await this.transactionService.updateTransaction(
       id,
       user.sub,
@@ -202,8 +205,9 @@ export class TransactionController {
   })
   async deleteTransaction(
     @UseAuth() user: UserPayload,
-    @Param('id') id: string,
+    @Param() params: IdParamDto,
   ): Promise<ResponseTemplate<transactions>> {
+    const { id } = params;
     const deletedTransaction = await this.transactionService.deleteTransaction(
       id,
       user.sub,

@@ -90,9 +90,15 @@ export class AuthService {
   }
 
   async verifyEmail(verificationToken: string) {
-    const payload = await this.jwtService.verifyAsync<{ email: string }>(
-      verificationToken,
-    );
+    let payload: { email: string };
+    try {
+      payload = await this.jwtService.verifyAsync<{ email: string }>(
+        verificationToken,
+      );
+    } catch (error) {
+      throw new UnauthorizedException('Verification token is invalid');
+    }
+
     const user = await this.userService.getUserStrict({ email: payload.email });
 
     if (!user) throw new UnauthorizedException('Verification token is invalid');
