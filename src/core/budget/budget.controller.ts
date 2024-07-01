@@ -9,7 +9,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { budgets } from '@prisma/client';
 import { ResponseTemplate } from 'src/utils/interceptors/transform.interceptor';
 
@@ -30,6 +30,16 @@ export class BudgetController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOperation({
     summary: 'Create a budget',
+    description:
+      'Create a new budget for the logged-in user. The request body should include all the necessary details to create the budget.',
+  })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Successfully created a budget',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
   })
   async createBudget(
     @UseAuth() user: UserPayload,
@@ -47,6 +57,16 @@ export class BudgetController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Retrieve all of the logged-in user's budgets",
+    description:
+      'Get all budgets that belong to the logged-in user. This endpoint returns a list of budgets along with their current amounts.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successfully retrieved budgets',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
   })
   async getBudgets(
     @UseAuth() user: UserPayload,
@@ -63,6 +83,16 @@ export class BudgetController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Retrieve a logged-in user's budget by ID",
+    description:
+      'Get a specific budget by its ID. This endpoint retrieves a budget along with its current amount for the logged-in user.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successfully retrieved budget',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Budget not found',
   })
   async getBudget(
     @UseAuth() user: UserPayload,
@@ -75,7 +105,7 @@ export class BudgetController {
     );
 
     return {
-      message: 'Successfully retrieved budgets',
+      message: 'Successfully retrieved budget',
       result: budget,
     };
   }
@@ -84,6 +114,20 @@ export class BudgetController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Update budget by ID',
+    description:
+      'Update the details of an existing budget by its ID. The request body should include the updated details of the budget.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successfully updated the budget',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Budget not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
   })
   async updateBudget(
     @UseAuth() user: UserPayload,
@@ -107,6 +151,16 @@ export class BudgetController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: 'Delete budget by ID',
+    description:
+      "Delete an existing budget by its ID. This endpoint removes the budget from the logged-in user's account.",
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successfully deleted the budget',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Budget not found',
   })
   async deleteBudget(
     @UseAuth() user: UserPayload,
@@ -116,7 +170,7 @@ export class BudgetController {
     const deletedBudget = await this.budgetService.deleteBudget(user.sub, id);
 
     return {
-      message: 'Successfully updated the budget',
+      message: 'Successfully deleted the budget',
       result: deletedBudget,
     };
   }

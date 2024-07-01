@@ -20,7 +20,7 @@ export class UserController {
       "Retrieve the logged-in user's essentials data for its profile",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: "Successfully retrieved the user's profile",
   })
   async getProfile(

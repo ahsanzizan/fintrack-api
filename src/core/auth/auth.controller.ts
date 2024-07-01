@@ -8,7 +8,13 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiParam, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { ResponseTemplate } from 'src/utils/interceptors/transform.interceptor';
 
 import { IsPublic, UseAuth } from './auth.decorator';
@@ -20,6 +26,7 @@ import UpdateProfileDto from './dto/updateProfile.dto';
 import { CreatedUser, UpdateProfileResult, UserPayload } from './types';
 
 @Controller('auth')
+@ApiTags('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
@@ -31,7 +38,14 @@ export class AuthController {
     description: 'Register a new user with name, email, and password.',
   })
   @ApiBody({ type: SignUpDto })
-  @ApiResponse({ status: 201, description: 'Registered successfully.' })
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Registered successfully.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
+  })
   async signUp(
     @Body() credentials: SignUpDto,
   ): Promise<ResponseTemplate<CreatedUser>> {
@@ -52,7 +66,14 @@ export class AuthController {
     description: 'Authenticate a user using email and password.',
   })
   @ApiBody({ type: SignInDto })
-  @ApiResponse({ status: 200, description: 'Signed in successfully.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Signed in successfully.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
+  })
   async signIn(
     @Body() credentials: SignInDto,
   ): Promise<ResponseTemplate<UserPayload>> {
@@ -79,7 +100,10 @@ export class AuthController {
     description: "The verification token sent to the user's email.",
     example: 'some-verification-token',
   })
-  @ApiResponse({ status: 200, description: 'Email verified successfully.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Email verified successfully.',
+  })
   async verify(
     @Param('token') verificationToken: string,
   ): Promise<ResponseTemplate<null>> {
@@ -99,7 +123,14 @@ export class AuthController {
       'Update the profile of the logged-in user. An email verification will be sent if the email is changed.',
   })
   @ApiBody({ type: UpdateProfileDto })
-  @ApiResponse({ status: 200, description: 'Profile updated successfully.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Profile updated successfully.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
+  })
   async updateProfile(
     @UseAuth() user: UserPayload,
     @Body() data: UpdateProfileDto,
@@ -120,7 +151,7 @@ export class AuthController {
       "Request a password reset token to be sent to the logged-in user's email.",
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Password reset email sent successfully.',
   })
   async requestPasswordReset(
@@ -142,7 +173,10 @@ export class AuthController {
       'Reset the password for the logged-in user using a reset token and new password.',
   })
   @ApiBody({ type: ResetPasswordDto })
-  @ApiResponse({ status: 200, description: 'Password reset successfully.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Password reset successfully.',
+  })
   async resetPassword(
     @UseAuth() user: UserPayload,
     @Body() data: ResetPasswordDto,

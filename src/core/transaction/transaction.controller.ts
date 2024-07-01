@@ -44,8 +44,12 @@ export class TransactionController {
   })
   @ApiBody({ type: CreateTransactionDto })
   @ApiResponse({
-    status: 201,
+    status: HttpStatus.CREATED,
     description: 'Successfully created a transaction.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
   })
   async createTransaction(
     @UseAuth() user: UserPayload,
@@ -66,6 +70,8 @@ export class TransactionController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: "Get logged-in user's transactions",
+    description:
+      'Retrieve a list of all transactions that belong to the logged-in user. This endpoint returns detailed information about each transaction, including type, amount, date, and description.',
   })
   @ApiQuery({
     name: 'page',
@@ -133,7 +139,7 @@ export class TransactionController {
     example: '60c72b2f9b1e8e4c3d6f7b12',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Successfully retrieved the transaction.',
   })
   async getTransaction(
@@ -166,8 +172,12 @@ export class TransactionController {
   })
   @ApiBody({ type: UpdateTransactionDto })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Successfully updated the transaction.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
   })
   async updateTransaction(
     @UseAuth() user: UserPayload,
@@ -200,7 +210,7 @@ export class TransactionController {
     example: '7dd32282-cc3b-4a32-a1ae-27a846d9ca10',
   })
   @ApiResponse({
-    status: 200,
+    status: HttpStatus.OK,
     description: 'Successfully deleted the transaction.',
   })
   async deleteTransaction(
