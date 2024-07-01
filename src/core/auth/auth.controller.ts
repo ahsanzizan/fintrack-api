@@ -131,6 +131,10 @@ export class AuthController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid input data',
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
   async updateProfile(
     @UseAuth() user: UserPayload,
     @Body() data: UpdateProfileDto,
@@ -154,6 +158,10 @@ export class AuthController {
     status: HttpStatus.OK,
     description: 'Password reset email sent successfully.',
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
   async requestPasswordReset(
     @UseAuth() user: UserPayload,
   ): Promise<ResponseTemplate<null>> {
@@ -176,6 +184,14 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Password reset successfully.',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Invalid input data',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
   })
   async resetPassword(
     @UseAuth() user: UserPayload,

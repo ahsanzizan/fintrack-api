@@ -23,6 +23,10 @@ export class UserController {
     status: HttpStatus.OK,
     description: "Successfully retrieved the user's profile",
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
   async getProfile(
     @UseAuth() user: UserPayload,
   ): Promise<ResponseTemplate<Profile>> {

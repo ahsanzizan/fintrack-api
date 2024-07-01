@@ -41,6 +41,10 @@ export class BudgetController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid input data',
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
   async createBudget(
     @UseAuth() user: UserPayload,
     @Body() data: CreateBudgetDto,
@@ -63,6 +67,10 @@ export class BudgetController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Successfully retrieved budgets',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
   })
   @ApiResponse({
     status: HttpStatus.UNAUTHORIZED,
@@ -93,6 +101,10 @@ export class BudgetController {
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'Budget not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
   })
   async getBudget(
     @UseAuth() user: UserPayload,
@@ -129,6 +141,10 @@ export class BudgetController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid input data',
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
   async updateBudget(
     @UseAuth() user: UserPayload,
     @Param() params: IdParamDto,
@@ -161,6 +177,10 @@ export class BudgetController {
   @ApiResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'Budget not found',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
   })
   async deleteBudget(
     @UseAuth() user: UserPayload,

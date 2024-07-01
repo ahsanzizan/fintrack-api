@@ -51,6 +51,10 @@ export class TransactionController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid input data',
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
   async createTransaction(
     @UseAuth() user: UserPayload,
     @Body() data: CreateTransactionDto,
@@ -103,6 +107,10 @@ export class TransactionController {
     type: String,
     example: 'desc',
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
   async getTransactions(
     @UseAuth() user: UserPayload,
     @Query() queries: PaginationDto,
@@ -142,6 +150,10 @@ export class TransactionController {
     status: HttpStatus.OK,
     description: 'Successfully retrieved the transaction.',
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
   async getTransaction(
     @UseAuth() user: UserPayload,
     @Param() params: IdParamDto,
@@ -179,6 +191,10 @@ export class TransactionController {
     status: HttpStatus.BAD_REQUEST,
     description: 'Invalid input data',
   })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
+  })
   async updateTransaction(
     @UseAuth() user: UserPayload,
     @Param() params: IdParamDto,
@@ -212,6 +228,10 @@ export class TransactionController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Successfully deleted the transaction.',
+  })
+  @ApiResponse({
+    status: HttpStatus.UNAUTHORIZED,
+    description: 'Unauthorized',
   })
   async deleteTransaction(
     @UseAuth() user: UserPayload,
