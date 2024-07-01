@@ -107,7 +107,7 @@ export class AuthController {
     const updatedProfile = await this.authService.updateProfile(user.sub, data);
 
     return {
-      message: `Updated the profile successfully, email verification sent to ${updatedProfile.email}`,
+      message: `Successfully updated the profile , email verification sent to ${updatedProfile.email}`,
       result: updatedProfile,
     };
   }

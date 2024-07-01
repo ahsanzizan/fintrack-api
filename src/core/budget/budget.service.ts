@@ -3,6 +3,7 @@ import { Prisma, TransactionType } from '@prisma/client';
 import { PrismaService } from 'src/lib/prisma/prisma.service';
 
 import CreateBudgetDto from './dto/createBudget.dto';
+import UpdateBudgetDto from './dto/updateBudget.dto';
 import { BudgetWithCurrentAmount } from './types';
 
 @Injectable()
@@ -26,20 +27,34 @@ export class BudgetService {
     return createdBudget;
   }
 
-  async getBudget(userId: string, budgetId: string) {
+  async getBudget(
+    budgetId: string,
+    userId: string,
+    include?: Prisma.budgetsInclude,
+  ) {
+    type budgetWithTransactions = Prisma.budgetsGetPayload<{
+      include: {
+        transactions: { select: { amount: true; transaction_type: true } };
+      };
+    }>;
+
     const budget = await this.prismaService.budgets.findUnique({
       where: { id: budgetId, user_id: userId },
-      include: {
-        transactions: {
-          select: { amount: true, transaction_type: true },
-        },
-      },
+      include,
     });
 
     if (!budget)
       throw new NotFoundException(
         `Budget with ID ${budgetId} that's created by user with ID ${userId} not found`,
       );
+
+    return budget as budgetWithTransactions;
+  }
+
+  async getBudgetWithCurrentAmount(userId: string, budgetId: string) {
+    const budget = await this.getBudget(budgetId, userId, {
+      transactions: { select: { amount: true, transaction_type: true } },
+    });
 
     const expenses = this.calculateTransactionsSum(
       budget.transactions,
@@ -105,5 +120,32 @@ export class BudgetService {
     );
 
     return budgetsWithCurrentAmount;
+  }
+
+  async updateBudget(
+    userId: string,
+    budgetId: string,
+    budgetData: UpdateBudgetDto,
+  ) {
+    // Validate the existence of the budget we're getting
+    const budget = await this.getBudget(budgetId, userId);
+
+    const updatedBudget = await this.prismaService.budgets.update({
+      where: { id: budget.id },
+      data: budgetData,
+    });
+
+    return updatedBudget;
+  }
+
+  async deleteBudget(userId: string, budgetId: string) {
+    // Validate the existence of the budget we're getting
+    const budget = await this.getBudget(budgetId, userId);
+
+    const deletedBudget = await this.prismaService.budgets.delete({
+      where: { id: budget.id },
+    });
+
+    return deletedBudget;
   }
 }
