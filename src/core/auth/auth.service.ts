@@ -43,11 +43,12 @@ export class AuthService {
       verificationToken,
     );
 
-    try {
-      await this.sendVerificationEmail(email, verificationToken);
-    } catch (error) {
-      throw new InternalServerErrorException('Cannot send verification email');
-    }
+    await this.sendEmail({
+      email,
+      subject: 'Verify your email for FinTrack',
+      text: `Please verify your email by clicking on the following link: ${config.baseUrl}/auth/verify/${verificationToken}`,
+      errorMessage: 'Failed to send verification email',
+    });
 
     return createdUser;
   }
@@ -78,15 +79,25 @@ export class AuthService {
     };
   }
 
-  async sendVerificationEmail(email: string, verificationToken: string) {
+  async sendEmail(content: {
+    email: string;
+    subject: string;
+    text: string;
+    errorMessage: string;
+  }) {
     const mailOptions: MailOptions = {
       from: config.serviceEmail,
-      to: email,
-      subject: 'Verify your email for FinTrack!',
-      text: `Please verify your email by clicking on the following link: ${config.baseUrl}/auth/verify/${verificationToken}`,
+      to: content.email,
+      subject: content.subject,
+      text: content.text,
     };
 
-    await this.transporter.sendMail(mailOptions);
+    try {
+      await this.transporter.sendMail(mailOptions);
+    } catch (error) {
+      // errorMessage will be used for throwing exception when the email sending failed mid-process
+      throw new InternalServerErrorException(content.errorMessage);
+    }
   }
 
   async verifyEmail(verificationToken: string) {
@@ -131,23 +142,17 @@ export class AuthService {
       updateInput.is_verified = false;
       updateInput.verification_token = newVerificationToken;
 
-      await this.sendVerificationEmail(email, newVerificationToken);
+      await this.sendEmail({
+        email,
+        subject: 'Verify your email for FinTrack',
+        text: `Please verify your email by clicking on the following link: ${config.baseUrl}/auth/verify/${newVerificationToken}`,
+        errorMessage: 'Failed to send verification email',
+      });
     }
 
     const updatedUser = await this.userService.updateUser(user.id, updateInput);
 
     return updatedUser;
-  }
-
-  async sendPasswordResetEmail(email: string, token: string) {
-    const mailOptions: MailOptions = {
-      from: config.serviceEmail,
-      to: email,
-      subject: 'Reset Your Password',
-      text: `Please reset your password by clicking on the following link: ${config.baseUrl}/reset-password?token=${token}\nThe link will be invalid in ${config.resetTokenExpiryTime / 60 / 1000} minutes time`,
-    };
-
-    await this.transporter.sendMail(mailOptions);
   }
 
   async requestPasswordReset(email: string) {
@@ -163,7 +168,12 @@ export class AuthService {
 
     const updatedUser = await this.userService.updateUser(user.id, updateInput);
 
-    await this.sendPasswordResetEmail(email, resetToken);
+    await this.sendEmail({
+      email,
+      subject: 'Reset Your Password',
+      text: `Please reset your password by clicking on the following link: ${config.baseUrl}/reset-password?token=${resetToken}\nThe link will be invalid in ${config.resetTokenExpiryTime / 60 / 1000} minutes time`,
+      errorMessage: 'Failed to send reset password email',
+    });
 
     return updatedUser;
   }
