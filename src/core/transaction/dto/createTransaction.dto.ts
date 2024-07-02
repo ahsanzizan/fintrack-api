@@ -36,6 +36,11 @@ export class CreateTransactionDto {
   @ApiProperty({ description: 'Category of the transaction' })
   categoryName: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty({ description: 'Payment method of the transaction' })
+  paymentMethodName: string;
+
   @IsUUID()
   @IsNotEmpty()
   @ApiProperty({ description: "The transaction's used budget's id" })

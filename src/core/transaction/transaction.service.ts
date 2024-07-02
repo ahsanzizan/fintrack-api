@@ -43,25 +43,33 @@ export class TransactionService {
       transaction_type,
       transaction_date,
       categoryName,
+      paymentMethodName,
       budgetId,
     } = transactionData;
 
     await this.validateBudgetId(budgetId, userId);
 
-    const connectUserId = { connect: { id: userId } };
+    const connectUserWithId = { connect: { id: userId } };
+
     const createInput: Prisma.transactionsCreateInput = {
       amount,
       description,
       transaction_type,
       transaction_date,
-      user: connectUserId,
+      user: connectUserWithId,
       category: {
         connectOrCreate: {
           create: {
             name: categoryName,
-            user: connectUserId,
+            user: connectUserWithId,
           },
           where: { name: categoryName },
+        },
+      },
+      payment_method: {
+        connectOrCreate: {
+          create: { name: paymentMethodName, user: connectUserWithId },
+          where: { name: paymentMethodName },
         },
       },
       budget: {
@@ -169,10 +177,13 @@ export class TransactionService {
       transaction_type,
       transaction_date,
       categoryName,
+      paymentMethodName,
       budgetId,
     } = transactionData;
 
     if (budgetId) await this.validateBudgetId(budgetId, transaction.user_id);
+
+    const connectUserWithId = { connect: { id: transaction.user_id } };
 
     const updateInput: Prisma.transactionsUpdateInput = {
       amount,
@@ -184,9 +195,20 @@ export class TransactionService {
             connectOrCreate: {
               create: {
                 name: categoryName,
-                user: { connect: { id: transaction.user_id } },
+                user: connectUserWithId,
               },
               where: { name: categoryName },
+            },
+          }
+        : undefined,
+      payment_method: paymentMethodName
+        ? {
+            connectOrCreate: {
+              create: {
+                name: paymentMethodName,
+                user: connectUserWithId,
+              },
+              where: { name: paymentMethodName },
             },
           }
         : undefined,
