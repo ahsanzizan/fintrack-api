@@ -72,10 +72,6 @@ export class BudgetController {
     status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized',
   })
-  @ApiResponse({
-    status: HttpStatus.UNAUTHORIZED,
-    description: 'Unauthorized',
-  })
   async getBudgets(
     @UseAuth() user: UserPayload,
   ): Promise<ResponseTemplate<BudgetWithCurrentAmount[]>> {
