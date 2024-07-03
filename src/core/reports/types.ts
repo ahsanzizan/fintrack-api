@@ -30,3 +30,25 @@ export interface TransformedTransaction {
   type: TransactionType;
   date: Date;
 }
+
+export interface ReportData {
+  thisMonth: {
+    expenses: TransformedTransaction[];
+    incomes: TransformedTransaction[];
+  };
+  prevMonth: {
+    expenses: TransformedTransaction[];
+    incomes: TransformedTransaction[];
+  };
+}
+
+export interface ReportDataTotals {
+  thisMonth: {
+    expenses: number;
+    incomes: number;
+  };
+  prevMonth: {
+    expenses: number;
+    incomes: number;
+  };
+}

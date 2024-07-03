@@ -1,27 +1,15 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/lib/prisma/prisma.service';
+import { MONTHS } from 'src/utils/constants';
 
 import { UserPayload } from '../auth/types';
 import {
   LimitedAttrTransaction,
   MonthlyReport,
+  ReportData,
+  ReportDataTotals,
   TransformedTransaction,
 } from './types';
-
-const MONTHS = [
-  'january',
-  'february',
-  'march',
-  'april',
-  'may',
-  'june',
-  'july',
-  'august',
-  'september',
-  'october',
-  'november',
-  'december',
-];
 
 @Injectable()
 export class ReportsService {
@@ -70,7 +58,55 @@ export class ReportsService {
     );
   }
 
-  async getReportByMonth(user: UserPayload, year: number, month: string) {
+  async filterTransactionsByDate(userId: string, lte: Date, gte: Date) {
+    const transactions = await this.prismaService.transactions.findMany({
+      where: {
+        user_id: userId,
+        transaction_date: { lte, gte },
+      },
+      select: {
+        amount: true,
+        category: { select: { name: true } },
+        transaction_type: true,
+        transaction_date: true,
+      },
+    });
+
+    return transactions;
+  }
+
+  constructReport(data: {
+    month: string;
+    year: number;
+    totals: ReportDataTotals;
+    details: ReportData;
+  }) {
+    const { month, year, totals, details } = data;
+
+    const expenseTrend =
+      (totals.thisMonth.expenses - totals.prevMonth.expenses) * 100;
+    const incomeTrend =
+      (totals.thisMonth.incomes - totals.prevMonth.incomes) * 100;
+
+    const report: MonthlyReport = {
+      month: `${month} ${year}`,
+      total_expenses: totals.thisMonth.expenses,
+      total_income: totals.thisMonth.incomes,
+      net_savings: totals.thisMonth.incomes - totals.thisMonth.expenses,
+      expense_details: details.thisMonth.expenses,
+      income_details: details.thisMonth.incomes,
+      trends: {
+        previous_month_total_expense: totals.prevMonth.expenses,
+        previous_month_total_income: totals.prevMonth.incomes,
+        expense_trend: `${expenseTrend}%`,
+        income_trend: `${incomeTrend}%`,
+      },
+    };
+
+    return report;
+  }
+
+  async getReportByDate(user: UserPayload, year: number, month: string) {
     this.validateMonth(month);
     this.validateYear(year);
 
@@ -89,21 +125,14 @@ export class ReportsService {
 
     if (desiredDate.getTime() > user.createdAt.getTime())
       throw new BadRequestException(
-        `User is not registered yet at ${month},${year}`,
+        `User is not registered yet at ${month}, ${year}`,
       );
 
-    const transactions = await this.prismaService.transactions.findMany({
-      where: {
-        user_id: user.sub,
-        transaction_date: { lte: lastDayOfMonth, gte: firstDayOfPrevMonth },
-      },
-      select: {
-        amount: true,
-        category: { select: { name: true } },
-        transaction_type: true,
-        transaction_date: true,
-      },
-    });
+    const transactions = await this.filterTransactionsByDate(
+      user.sub,
+      firstDayOfPrevMonth,
+      lastDayOfMonth,
+    );
 
     const firstDayOfMonth = new Date(
       desiredDate.getFullYear(),
@@ -127,7 +156,7 @@ export class ReportsService {
       lastDayOfPrevMonth,
     );
 
-    const details = {
+    const details: ReportData = {
       thisMonth: {
         expenses: this.filterByType(thisMonthTransactions, 'EXPENSE'),
         incomes: this.filterByType(thisMonthTransactions, 'INCOME'),
@@ -138,7 +167,7 @@ export class ReportsService {
       },
     };
 
-    const totals = {
+    const totals: ReportDataTotals = {
       thisMonth: {
         incomes: this.calculateTotalAmount(details.thisMonth.incomes),
         expenses: this.calculateTotalAmount(details.thisMonth.expenses),
@@ -149,25 +178,7 @@ export class ReportsService {
       },
     };
 
-    const expenseTrend =
-      (totals.thisMonth.expenses - totals.prevMonth.expenses) * 100;
-    const incomeTrend =
-      (totals.thisMonth.incomes - totals.prevMonth.incomes) * 100;
-
-    const report: MonthlyReport = {
-      month: `${month} ${year}`,
-      total_expenses: totals.thisMonth.expenses,
-      total_income: totals.thisMonth.incomes,
-      net_savings: totals.thisMonth.incomes - totals.thisMonth.expenses,
-      expense_details: details.thisMonth.expenses,
-      income_details: details.thisMonth.incomes,
-      trends: {
-        previous_month_total_expense: totals.prevMonth.expenses,
-        previous_month_total_income: totals.prevMonth.incomes,
-        expense_trend: `${expenseTrend}%`,
-        income_trend: `${incomeTrend}%`,
-      },
-    };
+    const report = this.constructReport({ month, year, totals, details });
 
     return report;
   }
