@@ -4,11 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/lib/prisma/prisma.service';
+import { PrismaService } from 'src/lib/prisma';
 import { paginator } from 'src/utils/paginator.utility';
 
-import CreateTransactionDto from './dto/createTransaction.dto';
-import UpdateTransactionDto from './dto/updateTransaction.dto';
+import { CreateTransactionDto, UpdateTransactionDto } from './dto';
 import { TransactionsWithCategoryAndBudget } from './types';
 
 const paginate = paginator(10);

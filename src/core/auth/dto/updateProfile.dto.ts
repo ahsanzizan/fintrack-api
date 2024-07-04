@@ -12,5 +12,3 @@ export class UpdateProfileDto {
   @ApiProperty({ description: "The user's email" })
   email?: string;
 }
-
-export default UpdateProfileDto;

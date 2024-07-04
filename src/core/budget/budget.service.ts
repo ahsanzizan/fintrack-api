@@ -1,9 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma, TransactionType } from '@prisma/client';
-import { PrismaService } from 'src/lib/prisma/prisma.service';
+import { PrismaService } from 'src/lib/prisma';
 
-import CreateBudgetDto from './dto/createBudget.dto';
-import UpdateBudgetDto from './dto/updateBudget.dto';
+import { CreateBudgetDto, UpdateBudgetDto } from './dto';
 import { BudgetWithCurrentAmount } from './types';
 
 @Injectable()

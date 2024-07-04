@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { PrismaService } from 'src/lib/prisma/prisma.service';
+import { PrismaService } from 'src/lib/prisma';
 import { MONTHS } from 'src/utils/constants';
 
 import { UserPayload } from '../auth/types';
@@ -115,23 +115,18 @@ export class ReportsService {
     const firstDayOfPrevMonth = new Date(
       desiredDate.getFullYear(),
       desiredDate.getMonth() - 1,
-      1,
+      2,
     );
     const lastDayOfMonth = new Date(
       desiredDate.getFullYear(),
       desiredDate.getMonth() + 1,
-      0,
+      1,
     );
-
-    if (desiredDate.getTime() > user.createdAt.getTime())
-      throw new BadRequestException(
-        `User is not registered yet at ${month}, ${year}`,
-      );
 
     const transactions = await this.filterTransactionsByDate(
       user.sub,
-      firstDayOfPrevMonth,
       lastDayOfMonth,
+      firstDayOfPrevMonth,
     );
 
     const firstDayOfMonth = new Date(

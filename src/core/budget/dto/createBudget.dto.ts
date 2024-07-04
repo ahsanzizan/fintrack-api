@@ -33,5 +33,3 @@ export class CreateBudgetDto {
   @ApiProperty({ description: 'Ending date of the budget' })
   end_date: Date;
 }
-
-export default CreateBudgetDto;

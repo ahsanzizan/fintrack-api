@@ -17,8 +17,7 @@ import { UseAuth } from '../auth/auth.decorator';
 import { UserPayload } from '../auth/types';
 import { IdParamDto } from '../global.dtos';
 import { BudgetService } from './budget.service';
-import CreateBudgetDto from './dto/createBudget.dto';
-import UpdateBudgetDto from './dto/updateBudget.dto';
+import { CreateBudgetDto, UpdateBudgetDto } from './dto';
 import { BudgetWithCurrentAmount } from './types';
 
 @Controller({ path: 'budgets', version: '1' })

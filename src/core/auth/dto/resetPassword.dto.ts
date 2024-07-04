@@ -12,5 +12,3 @@ export class ResetPasswordDto {
   @ApiProperty({ description: 'The new password' })
   newPassword: string;
 }
-
-export default ResetPasswordDto;

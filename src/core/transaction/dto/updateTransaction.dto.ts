@@ -45,5 +45,3 @@ export class UpdateTransactionDto {
   @ApiProperty({ description: "The transaction's used budget's id" })
   budgetId?: string;
 }
-
-export default UpdateTransactionDto;

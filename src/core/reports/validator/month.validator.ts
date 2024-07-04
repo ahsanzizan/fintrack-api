@@ -8,9 +8,9 @@ import {
 @ValidatorConstraint({ async: false })
 export class IsMonthConstraint implements ValidatorConstraintInterface {
   validate(month: any) {
-    if (typeof month !== 'number') {
-      return false;
-    }
+    const convertedMonth = Number(month);
+    if (Number.isNaN(convertedMonth)) return false;
+
     return month >= 1 && month <= 12;
   }
 

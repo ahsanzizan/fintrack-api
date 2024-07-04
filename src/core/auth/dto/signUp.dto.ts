@@ -17,5 +17,3 @@ export class SignUpDto {
   @ApiProperty()
   password: string;
 }
-
-export default SignUpDto;

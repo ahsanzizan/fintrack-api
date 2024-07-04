@@ -14,7 +14,7 @@ import { compareData, hashData } from 'src/utils/encryption.utility';
 import { v4 as uuidv4 } from 'uuid';
 
 import { UserService } from '../user/user.service';
-import UpdateProfileDto from './dto/updateProfile.dto';
+import { UpdateProfileDto } from './dto';
 import { UserPayload } from './types';
 
 @Injectable()
@@ -68,8 +68,8 @@ export class AuthService {
       sub: id,
       email,
       name,
-      createdAt: created_at,
-      updatedAt: updated_at,
+      createdAt: created_at.toISOString(),
+      updatedAt: updated_at.toISOString(),
     };
     const signedPayload = await this.jwtService.signAsync(payload);
 

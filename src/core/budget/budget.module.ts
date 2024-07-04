@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { PrismaModule } from 'src/lib/prisma/prisma.module';
+import { PrismaModule } from 'src/lib/prisma';
 
 import { BudgetController } from './budget.controller';
 import { BudgetService } from './budget.service';

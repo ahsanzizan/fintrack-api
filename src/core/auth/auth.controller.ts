@@ -19,10 +19,12 @@ import { ResponseTemplate } from 'src/utils/interceptors/transform.interceptor';
 
 import { IsPublic, UseAuth } from './auth.decorator';
 import { AuthService } from './auth.service';
-import ResetPasswordDto from './dto/resetPassword.dto';
-import SignInDto from './dto/signIn.dto';
-import SignUpDto from './dto/signUp.dto';
-import UpdateProfileDto from './dto/updateProfile.dto';
+import {
+  ResetPasswordDto,
+  SignInDto,
+  SignUpDto,
+  UpdateProfileDto,
+} from './dto';
 import { CreatedUser, UpdateProfileResult, UserPayload } from './types';
 
 @Controller('auth')

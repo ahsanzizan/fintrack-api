@@ -25,9 +25,8 @@ import { PaginatedResult } from 'src/utils/paginator.utility';
 import { UseAuth } from '../auth/auth.decorator';
 import { UserPayload } from '../auth/types';
 import { IdParamDto } from '../global.dtos';
-import CreateTransactionDto from './dto/createTransaction.dto';
+import { CreateTransactionDto, UpdateTransactionDto } from './dto';
 import { PaginationDto } from './dto/pagination.dto';
-import UpdateTransactionDto from './dto/updateTransaction.dto';
 import { TransactionService } from './transaction.service';
 import { TransactionsWithCategoryAndBudget } from './types';
 

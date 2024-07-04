@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from 'src/lib/prisma/prisma.service';
+import { PrismaService } from 'src/lib/prisma';
 import { hashData } from 'src/utils/encryption.utility';
 
 @Injectable()
@@ -68,9 +68,9 @@ export class UserService {
     return updatedUser;
   }
 
-  async getUserProfile(userId: string) {
+  async getUserProfile(userEmail: string) {
     const userProfile = await this.getUserStrict(
-      { id: userId },
+      { email: userEmail },
       {
         name: true,
         email: true,

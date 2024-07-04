@@ -2,8 +2,8 @@ export interface UserPayload {
   sub: string;
   name: string;
   email: string;
-  createdAt: Date;
-  updatedAt: Date | null;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreatedUser {

@@ -12,5 +12,3 @@ export class SignInDto {
   @ApiProperty({ description: 'Password used to sign up' })
   password: string;
 }
-
-export default SignInDto;
