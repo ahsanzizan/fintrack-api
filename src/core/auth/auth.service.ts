@@ -35,6 +35,10 @@ export class AuthService {
   }
 
   async registerUser(name: string, email: string, password: string) {
+    const user = await this.userService.getUserStrict({ email });
+    if (user)
+      throw new ForbiddenException(`User with email ${email} already exists`);
+
     const verificationToken = await this.jwtService.signAsync({ email });
     const createdUser = await this.userService.createUser(
       email,
