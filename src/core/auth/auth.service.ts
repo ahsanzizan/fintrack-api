@@ -62,7 +62,10 @@ export class AuthService {
     if (!user)
       throw new NotFoundException(`User with email ${inputEmail} not found`);
 
-    const passwordCorrect = compareData(user.password_hash, inputPassword);
+    const passwordCorrect = await compareData(
+      user.password_hash,
+      inputPassword,
+    );
     if (!passwordCorrect)
       throw new UnauthorizedException('Password is incorrect');
 
@@ -156,7 +159,17 @@ export class AuthService {
 
     const updatedUser = await this.userService.updateUser(user.id, updateInput);
 
-    return updatedUser;
+    // Generate a new access token after changing the email
+    const payload: UserPayload = {
+      sub: userId,
+      email: updatedUser.email,
+      name: updatedUser.name,
+      createdAt: user.created_at.toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    const signedPayload = await this.jwtService.signAsync(payload);
+
+    return { ...updatedUser, access_token: signedPayload };
   }
 
   async requestPasswordReset(email: string) {
