@@ -133,6 +133,9 @@ export class AuthService {
     if (!user) throw new NotFoundException(`User with ID ${userId} not found`);
 
     const { email, name } = profileData;
+
+    if (email === user.email || name === user.name) return null;
+
     const updateInput: Prisma.usersUpdateInput = {
       email,
       name,

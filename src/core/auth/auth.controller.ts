@@ -140,12 +140,19 @@ export class AuthController {
   async updateProfile(
     @UseAuth() user: UserPayload,
     @Body() data: UpdateProfileDto,
-  ): Promise<ResponseTemplate<UpdateProfileResult>> {
+  ): Promise<ResponseTemplate<UpdateProfileResult | null>> {
     const updatedProfile = await this.authService.updateProfile(user.sub, data);
+
+    if (!updatedProfile) {
+      return {
+        message: `There is nothing to update`,
+        result: updatedProfile,
+      };
+    }
 
     return {
       message: `Successfully updated the profile , email verification sent to ${updatedProfile.email}`,
-      result: updatedProfile,
+      result: updatedProfile ?? 'There is nothing to update',
     };
   }
 

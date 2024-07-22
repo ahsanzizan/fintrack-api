@@ -10,8 +10,16 @@ export class BudgetService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async createBudget(userId: string, budgetData: CreateBudgetDto) {
+    const payload: CreateBudgetDto = {
+      amount: budgetData.amount,
+      name: budgetData.name,
+      start_date: budgetData.start_date,
+      end_date: budgetData.end_date,
+      goal: budgetData.goal,
+    };
+
     const createInput: Prisma.budgetsCreateInput = {
-      ...budgetData,
+      ...payload,
       user: {
         connect: {
           id: userId,
@@ -129,9 +137,17 @@ export class BudgetService {
     // Validate the existence of the budget we're getting
     const budget = await this.getBudget(budgetId, userId);
 
+    const payload: UpdateBudgetDto = {
+      amount: budgetData.amount,
+      name: budgetData.name,
+      start_date: budgetData.start_date,
+      end_date: budgetData.end_date,
+      goal: budgetData.goal,
+    };
+
     const updatedBudget = await this.prismaService.budgets.update({
       where: { id: budget.id },
-      data: budgetData,
+      data: payload,
     });
 
     return updatedBudget;
