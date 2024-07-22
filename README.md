@@ -34,15 +34,28 @@ $ npm run start:prod
 ## Test
 
 ```bash
-# unit tests
-$ npm run test
-
 # e2e tests
 $ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```
+
+## Design Pattern
+
+### Repository Design Pattern
+
+The Repository Design Pattern encapsulates data access and manipulation logic, making it easier to manage and test. This pattern acts as an intermediary between the domain and data mapping layer, ensuring that data access logic is centralized and reusable.
+
+#### Reason
+
+By separating data access logic, it becomes easier to modify it if there are changes in the database design.
+
+### Singleton Design Pattern
+
+The Singleton Design Pattern aims to ensure that a class has only one instance, providing global access to that instance. This is particularly useful for managing shared resources or controlling access to certain services.
+
+#### Reason
+
+- Centralized Access Control: Ensures there is only one instance of a particular class, making resource or service management more effective.
+- Efficient Memory Usage: Reduces memory usage by ensuring that only one instance is created.
 
 ## Swagger Documentation
 
